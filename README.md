@@ -1,5 +1,5 @@
 link:https://learn-french-app.vercel.app/
-# Learn French - iOS Inspired
+# Learn German - iOS Inspired
 
 A modern, interactive french language learning platform built with React and styled with an iOS design language.
 
@@ -44,3 +44,4 @@ The application uses a custom design system inspired by Apple's iOS and iPadOS, 
 - `/src/pages` - Main application pages
 - `/src/styles` - CSS and TailwindCSS configuration
 - `/src/assets` - Images, icons, and other static assets
+
