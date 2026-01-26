@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Tab } from '@headlessui/react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -28,11 +28,22 @@ const CoursesPage = () => {
   };
   
   // Calculate course completion progress
-  const getCompletionProgress = (courseType) => {
-    const totalLessons = userData.courses[courseType]?.length || 0;
-    const completedLessons = userData.courses[courseType]?.filter(lesson => lesson.progress === 100 || lesson.completed).length || 0;
-    return (completedLessons / totalLessons) * 100;
-  };
+  const courseStats = useMemo(() => {
+    const stats = {};
+    const categories = ['beginner', 'intermediate', 'advanced'];
+
+    categories.forEach((category) => {
+      const courses = userData.courses[category] || [];
+      const total = courses.length;
+      const completed = courses.filter(
+        (lesson) => lesson.progress === 100 || lesson.completed
+      ).length;
+      const progress = total > 0 ? (completed / total) * 100 : 0;
+      stats[category] = { total, completed, progress };
+    });
+
+    return stats;
+  }, [userData.courses]);
   
   // Animation variants
   const container = {
@@ -85,11 +96,11 @@ const CoursesPage = () => {
                 <h3 className="text-lg font-semibold text-[#1A1A1A] dark:text-white mb-2">Beginner Courses</h3>
                 <div className="flex items-baseline">
                   <span className="text-3xl font-bold text-ios-blue dark:text-white">
-                    {userData.courses.beginner.filter(l => l.completed || l.progress === 100).length}
+                    {courseStats.beginner.completed}
                   </span>
-                  <span className="text-ios-gray-700 dark:text-white/80 ml-1 font-normal">/ {userData.courses.beginner.length}</span>
+                  <span className="text-ios-gray-700 dark:text-white/80 ml-1 font-normal">/ {courseStats.beginner.total}</span>
                 </div>
-                <Progress value={getCompletionProgress('beginner')} total={100} className="w-full mt-4" />
+                <Progress value={courseStats.beginner.progress} total={100} className="w-full mt-4" />
               </div>
             </Card>
           </motion.div>
@@ -103,11 +114,11 @@ const CoursesPage = () => {
                 <h3 className="text-lg font-semibold text-[#1A1A1A] dark:text-white mb-2">Intermediate Courses</h3>
                 <div className="flex items-baseline">
                   <span className="text-3xl font-bold text-ios-orange dark:text-white">
-                    {userData.courses.intermediate?.filter(l => l.completed || l.progress === 100).length || 0}
+                    {courseStats.intermediate.completed}
                   </span>
-                  <span className="text-ios-gray-700 dark:text-white/80 ml-1 font-normal">/ {userData.courses.intermediate?.length || 0}</span>
+                  <span className="text-ios-gray-700 dark:text-white/80 ml-1 font-normal">/ {courseStats.intermediate.total}</span>
                 </div>
-                <Progress value={getCompletionProgress('intermediate')} total={100} color="orange" className="w-full mt-4" />
+                <Progress value={courseStats.intermediate.progress} total={100} color="orange" className="w-full mt-4" />
               </div>
             </Card>
           </motion.div>
@@ -121,11 +132,11 @@ const CoursesPage = () => {
                 <h3 className="text-lg font-semibold text-[#1A1A1A] dark:text-white mb-2">Advanced Courses</h3>
                 <div className="flex items-baseline">
                   <span className="text-3xl font-bold text-ios-purple dark:text-white">
-                    {userData.courses.advanced?.filter(l => l.completed || l.progress === 100).length || 0}
+                    {courseStats.advanced.completed}
                   </span>
-                  <span className="text-ios-gray-700 dark:text-white/80 ml-1 font-normal">/ {userData.courses.advanced?.length || 0}</span>
+                  <span className="text-ios-gray-700 dark:text-white/80 ml-1 font-normal">/ {courseStats.advanced.total}</span>
                 </div>
-                <Progress value={getCompletionProgress('advanced')} total={100} color="purple" className="w-full mt-4" />
+                <Progress value={courseStats.advanced.progress} total={100} color="purple" className="w-full mt-4" />
               </div>
             </Card>
           </motion.div>
