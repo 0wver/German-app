@@ -1090,7 +1090,22 @@ export const UserDataProvider = ({ children }) => {
   // Save data to localStorage whenever it changes
   useEffect(() => {
     if (isLoaded) {
-      localStorage.setItem('germanAppUserData', JSON.stringify(userData));
+      const save = () => {
+        localStorage.setItem('germanAppUserData', JSON.stringify(userData));
+      };
+
+      const handler = setTimeout(save, 1000);
+
+      const handleBeforeUnload = () => {
+        save();
+      };
+
+      window.addEventListener('beforeunload', handleBeforeUnload);
+
+      return () => {
+        clearTimeout(handler);
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+      };
     }
   }, [userData, isLoaded]);
 
